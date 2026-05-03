@@ -44,7 +44,7 @@ jobs:
           ## Rejestr Działalności Rolnośrodowiskowej WPR PS 2023-2027
 
           Pobierz plik `RejestrZabiegow.exe` poniżej i uruchom — nie wymaga instalacji Pythona.
-        files: dist\RejestrZabiegow.exe
+        files: dist/RejestrZabiegow.exe
         draft: false
         prerelease: false
       env:
