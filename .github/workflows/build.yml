@@ -1,0 +1,69 @@
+name: Buduj EXE dla Windows
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:  # pozwala uruchomić ręcznie
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+    - name: Pobierz kod
+      uses: actions/checkout@v4
+
+    - name: Zainstaluj Python 3.12
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Zainstaluj biblioteki
+      run: |
+        pip install pandas openpyxl reportlab xlrd pyinstaller
+
+    - name: Zbuduj EXE
+      run: |
+        pyinstaller --onefile --windowed --name "RejestrZabiegow" ^
+          --add-data "katalog.py;." ^
+          --add-data "walidacja.py;." ^
+          --add-data "kalkulator_wypasu.py;." ^
+          --hidden-import pandas ^
+          --hidden-import openpyxl ^
+          --hidden-import reportlab ^
+          --hidden-import reportlab.graphics ^
+          --hidden-import reportlab.platypus ^
+          --hidden-import reportlab.pdfbase ^
+          --hidden-import reportlab.pdfbase.ttfonts ^
+          --hidden-import xlrd ^
+          app.py
+
+    - name: Sprawdź czy EXE powstał
+      run: dir dist\
+
+    - name: Wgraj EXE jako artefakt
+      uses: actions/upload-artifact@v4
+      with:
+        name: RejestrZabiegow-Windows
+        path: dist\RejestrZabiegow.exe
+        retention-days: 30
+
+    - name: Utwórz Release
+      uses: softprops/action-gh-release@v1
+      if: github.ref == 'refs/heads/main'
+      with:
+        tag_name: v1.3.${{ github.run_number }}
+        name: "Rejestr Zabiegów v1.3.${{ github.run_number }}"
+        body: |
+          ## Rejestr Działalności Rolnośrodowiskowej WPR PS 2023-2027
+
+          ### Pobieranie
+          Pobierz plik `RejestrZabiegow.exe` poniżej i uruchom — nie wymaga instalacji Pythona.
+
+          ### Co nowego
+          Automatyczna aktualizacja z kodu źródłowego.
+        files: dist\RejestrZabiegow.exe
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
