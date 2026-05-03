@@ -3,7 +3,7 @@ name: Buduj EXE dla Windows
 on:
   push:
     branches: [ main ]
-  workflow_dispatch:  # pozwala uruchomić ręcznie
+  workflow_dispatch:
 
 jobs:
   build-windows:
@@ -19,24 +19,10 @@ jobs:
         python-version: '3.12'
 
     - name: Zainstaluj biblioteki
-      run: |
-        pip install pandas openpyxl reportlab xlrd pyinstaller
+      run: pip install pandas openpyxl reportlab xlrd pyinstaller
 
     - name: Zbuduj EXE
-      run: |
-        pyinstaller --onefile --windowed --name "RejestrZabiegow" ^
-          --add-data "katalog.py;." ^
-          --add-data "walidacja.py;." ^
-          --add-data "kalkulator_wypasu.py;." ^
-          --hidden-import pandas ^
-          --hidden-import openpyxl ^
-          --hidden-import reportlab ^
-          --hidden-import reportlab.graphics ^
-          --hidden-import reportlab.platypus ^
-          --hidden-import reportlab.pdfbase ^
-          --hidden-import reportlab.pdfbase.ttfonts ^
-          --hidden-import xlrd ^
-          app.py
+      run: pyinstaller --onefile --windowed --name "RejestrZabiegow" --add-data "katalog.py;." --add-data "walidacja.py;." --add-data "kalkulator_wypasu.py;." --hidden-import pandas --hidden-import openpyxl --hidden-import reportlab --hidden-import reportlab.graphics --hidden-import reportlab.platypus --hidden-import reportlab.pdfbase --hidden-import reportlab.pdfbase.ttfonts --hidden-import xlrd app.py
 
     - name: Sprawdź czy EXE powstał
       run: dir dist\
@@ -57,11 +43,7 @@ jobs:
         body: |
           ## Rejestr Działalności Rolnośrodowiskowej WPR PS 2023-2027
 
-          ### Pobieranie
           Pobierz plik `RejestrZabiegow.exe` poniżej i uruchom — nie wymaga instalacji Pythona.
-
-          ### Co nowego
-          Automatyczna aktualizacja z kodu źródłowego.
         files: dist\RejestrZabiegow.exe
         draft: false
         prerelease: false
